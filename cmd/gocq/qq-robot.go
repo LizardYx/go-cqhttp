@@ -195,7 +195,7 @@ func deviceInfo() string {
   "finger_print": "mamoe/mirai/mirai:10/MIRAI.200122.001/4910920:user/release-keys",
   "boot_id": "b1cc7e1c-fc9c-f512-07e2-acbdb829f00a",
   "proc_version": "Linux version 3.0.31-DLNvZxhc (android-build@xxx.xxx.xxx.xxx.com)",
-  "protocol": 5,
+  "protocol": 3,
   "imei": "597005714727425",
   "brand": "mamoe",
   "bootloader": "unknown",
