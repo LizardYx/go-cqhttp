@@ -83,6 +83,29 @@ func MainByT3(QQAccount int64, QQPassword string) {
 		cli.Uin = base.Account.Uin
 		cli.PasswordMd5 = base.PasswordHash
 	}
+	if !base.FastStart {
+		log.Infof("正在检查协议更新...")
+		currentVersionName := device.Protocol.Version().SortVersionName
+		remoteVersion, err := getRemoteLatestProtocolVersion(int(device.Protocol.Version().Protocol))
+		if err == nil {
+			remoteVersionName := gjson.GetBytes(remoteVersion, "sort_version_name").String()
+			if remoteVersionName != currentVersionName {
+				switch {
+				case !base.UpdateProtocol:
+					log.Infof("检测到协议更新: %s -> %s", currentVersionName, remoteVersionName)
+					log.Infof("如果登录时出现版本过低错误, 可尝试使用 -update-protocol 参数启动")
+				case !isTokenLogin:
+					_ = device.Protocol.Version().UpdateFromJson(remoteVersion)
+					log.Infof("协议版本已更新: %s -> %s", currentVersionName, remoteVersionName)
+				default:
+					log.Infof("检测到协议更新: %s -> %s", currentVersionName, remoteVersionName)
+					log.Infof("由于使用了会话缓存, 无法自动更新协议, 请删除缓存后重试")
+				}
+			}
+		} else if err.Error() != "remote version unavailable" {
+			log.Warnf("检查协议更新失败: %v", err)
+		}
+	}
 	if !isTokenLogin {
 		if !isQRCodeLogin {
 			if err := commonLogin(); err != nil {
